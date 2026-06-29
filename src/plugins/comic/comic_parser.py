@@ -53,11 +53,15 @@ COMICS = {
         "title": lambda feed: feed.entries[0].title,
         "caption": lambda element: re.search(r'title="(.*?)" />', element.replace('\n', '')).group(1),
     },
-    "webcomic name": {
-        "feed": "https://webcomicname.com/rss",
+    "They Can Talk": {
+        "feed": "https://theycantalk.com/rss",
         "element": lambda feed: feed.entries[0].description,
         "url": lambda element: re.search(r'<img[^>]+src=["\"]([^"\"]+)["\"]', element).group(1),
-        "title": lambda feed: "",
+        "title": lambda feed: getattr(feed.entries[0], "title", None) or (
+            re.findall(r'<p>(.*?)</p>', feed.entries[0].description)[-1]
+            if re.findall(r'<p>(.*?)</p>', feed.entries[0].description)
+            else ""
+        ),
         "caption": lambda element: "",
     },
 }
