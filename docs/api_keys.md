@@ -83,6 +83,21 @@ Required for the GitHub Plugin
     GITHUB_SECRET=your-key
     ```
 
+## Metra GTFS Realtime Key
+
+Optional for the Metra Plugin
+
+The Metra plugin works without a key using Metra's public GTFS static schedule. A key
+only adds live delays, cancellations and service alerts.
+
+- Agree to the license agreement and submit the request form on [Metra's developer page](https://www.metra.com/developers)
+    - Approval typically takes about one business day, after which Metra emails you an `api_token`
+- The realtime feeds are free and update every 30 seconds
+- Store your api key in the .env file with the key `METRA_API_KEY`
+    ```
+    METRA_API_KEY=your-key
+    ```
+
 ## Immich Key
 
 Required for the Image Album plugin for the Immich Provider

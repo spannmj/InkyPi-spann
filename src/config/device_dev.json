@@ -19,6 +19,7 @@
         "image_upload",
         "apod",
         "image_url",
+        "metra",
         "newspaper",
         "rss",
         "screenshot",
@@ -34,16 +35,42 @@
                 "name": "Default",
                 "start_time": "00:00",
                 "end_time": "24:00",
-                "plugins": [],
+                "plugins": [
+                    {
+                        "plugin_id": "metra",
+                        "name": "test",
+                        "plugin_settings": {
+                            "metraLine": "UP-NW",
+                            "originStop": "EDISONPK",
+                            "destinationStop": "OTC",
+                            "walkMinutes": "12",
+                            "departureCount": "4",
+                            "useRealtime": "true",
+                            "showAlerts": "true",
+                            "selectedFrame": "None",
+                            "topMargin": "",
+                            "bottomMargin": "",
+                            "leftMargin": "",
+                            "rightMargin": "",
+                            "backgroundOption": "color",
+                            "backgroundColor": "#ffffff",
+                            "textColor": "#000000"
+                        },
+                        "refresh": {
+                            "interval": 300
+                        },
+                        "latest_refresh_time": null
+                    }
+                ],
                 "current_plugin_index": null
             }
         ],
         "active_playlist": null
     },
     "refresh_info": {
-        "refresh_time": null,
-        "image_hash": null,
-        "refresh_type": null,
-        "plugin_id": null
+        "refresh_time": "2026-09-02T02:04:50.297011+00:00",
+        "image_hash": "623ab772dad46ddb18e6355cc6ba7a141de5ea1a88e37ef612a3d527171e026c",
+        "refresh_type": "Manual Update",
+        "plugin_id": "metra"
     }
 }

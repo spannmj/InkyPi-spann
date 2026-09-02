@@ -1,0 +1,69 @@
+{% extends "plugin.html" %}
+
+{% block content %}
+<div class="metra-board{% if compact %} is-compact{% endif %}{% if narrow %} is-narrow{% endif %}"
+     style="--line-color: #{{ route.color }}; --line-text: #{{ route.text_color }};">
+
+  <div class="board-header">
+    <div class="line-badge">{{ route.short_name }}</div>
+    <div class="trip">
+      <span class="trip-origin">{{ origin_name }}</span>
+      <span class="trip-arrow">&rarr;</span>
+      <span class="trip-destination">{{ destination_name }}</span>
+    </div>
+    <div class="board-meta">
+      <span class="meta-time">{{ updated_at.hm }}<span class="ap">{{ updated_at.ap }}</span></span>
+      <span class="meta-source">{% if realtime %}live{% else %}scheduled{% endif %}</span>
+    </div>
+  </div>
+
+  <div class="hero hero-{{ hero.kind }}">
+    <div class="hero-left">
+      <div class="hero-label">{{ hero.label }}</div>
+      <div class="hero-value">
+        {{ hero.value }}{% if hero.unit %}<span class="hero-unit">{{ hero.unit }}</span>{% endif %}
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-times">
+        <span class="hero-depart">{{ featured.depart.hm }}<span class="ap">{{ featured.depart.ap }}</span></span>
+        <span class="hero-arrow">&rarr;</span>
+        <span class="hero-arrive">{{ featured.arrive.hm }}<span class="ap">{{ featured.arrive.ap }}</span></span>
+      </div>
+      <div class="hero-detail">
+        Train {{ featured.train }} &middot; {{ featured.duration }} min ride
+        {%- if walk_minutes %} &middot; out the door by {{ featured.leave_at.hm }}{{ featured.leave_at.ap }}{% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="table">
+    <div class="table-row table-head">
+      <span class="col-depart">Depart</span>
+      <span class="col-arrive">Arrive</span>
+      <span class="col-train">Train</span>
+      {% if not narrow %}<span class="col-leave">Leave by</span>{% endif %}
+      <span class="col-status">Status</span>
+    </div>
+    {% for row in departures %}
+    <div class="table-row{% if row.featured %} is-featured{% endif %}{% if row.cancelled %} is-cancelled{% endif %}">
+      <span class="col-depart">{{ row.depart.hm }}<span class="ap">{{ row.depart.ap }}</span></span>
+      <span class="col-arrive">{{ row.arrive.hm }}<span class="ap">{{ row.arrive.ap }}</span></span>
+      <span class="col-train">{{ row.train }}</span>
+      {% if not narrow %}<span class="col-leave">{% if row.leave_in >= 0 %}{{ row.leave_at.hm }}{{ row.leave_at.ap }}{% else %}&mdash;{% endif %}</span>{% endif %}
+      <span class="col-status status-{{ row.status_kind }}">{{ row.status }}</span>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% if alerts %}
+  <div class="alerts">
+    {% for alert in alerts %}
+    <div class="alert">{{ alert }}</div>
+    {% endfor %}
+  </div>
+  {% elif not realtime_available %}
+  <div class="footnote">Scheduled times only &middot; add METRA_API_KEY for live delays</div>
+  {% endif %}
+</div>
+{% endblock %}

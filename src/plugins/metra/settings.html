@@ -1,0 +1,117 @@
+<div class="form-group">
+    <div class="form-group nowrap">
+        <label for="metraLine" class="form-label">Line:</label>
+        <select id="metraLine" name="metraLine" class="form-input" required>
+            {% for line in metra_lines %}
+            <option value="{{ line.id }}">{{ line.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group nowrap">
+        <label for="originStop" class="form-label">From:</label>
+        <select id="originStop" name="originStop" class="form-input" required></select>
+    </div>
+    <div class="form-group nowrap">
+        <label for="destinationStop" class="form-label">To:</label>
+        <select id="destinationStop" name="destinationStop" class="form-input" required></select>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="form-group nowrap">
+        <label for="walkMinutes" class="form-label" title="Used for the 'leave in' countdown and the Leave By column">Minutes to station:</label>
+        <input type="number" id="walkMinutes" name="walkMinutes" class="form-input" min="0" max="180" step="1">
+    </div>
+    <div class="form-group nowrap">
+        <label for="departureCount" class="form-label">Trains to show:</label>
+        <select id="departureCount" name="departureCount" class="form-input">
+            {% for count in [3, 4, 5, 6, 7, 8] %}
+            <option value="{{ count }}">{{ count }}</option>
+            {% endfor %}
+        </select>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="form-group">
+        <label for="useRealtime" class="form-label" title="Requires METRA_API_KEY in .env">Use live delays:</label>
+        <div class="toggle-container">
+            <!-- These toggles default to on, so the value is carried by a hidden
+                 input: an unchecked checkbox submits nothing at all. -->
+            <input type="hidden" id="useRealtimeValue" name="useRealtime" value="true">
+            <input type="checkbox" id="useRealtime" class="toggle-checkbox" checked
+                onclick="document.getElementById('useRealtimeValue').value = this.checked ? 'true' : 'false'">
+            <label for="useRealtime" class="toggle-label"></label>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="showAlerts" class="form-label" title="Requires METRA_API_KEY in .env">Show service alerts:</label>
+        <div class="toggle-container">
+            <input type="hidden" id="showAlertsValue" name="showAlerts" value="true">
+            <input type="checkbox" id="showAlerts" class="toggle-checkbox" checked
+                onclick="document.getElementById('showAlertsValue').value = this.checked ? 'true' : 'false'">
+            <label for="showAlerts" class="toggle-label"></label>
+        </div>
+    </div>
+</div>
+
+{% if not metra_lines %}
+<div class="form-group">
+    <span style="color: var(--text-primary);">
+        Could not download the Metra GTFS schedule. Check the device's network connection and reload this page.
+    </span>
+</div>
+{% endif %}
+
+<script>
+    (() => {
+        const stopsByLine = {{ metra_stops_json | safe }};
+        const defaults = {{ metra_defaults | tojson }};
+
+        const lineSelect = document.getElementById('metraLine');
+        const originSelect = document.getElementById('originStop');
+        const destinationSelect = document.getElementById('destinationStop');
+
+        function fillStops(select, lineId, selectedId) {
+            const stops = stopsByLine[lineId] || [];
+            select.innerHTML = '';
+            stops.forEach(stop => {
+                const option = document.createElement('option');
+                option.value = stop.id;
+                option.textContent = stop.name;
+                select.appendChild(option);
+            });
+            if (selectedId && stops.some(stop => stop.id === selectedId)) {
+                select.value = selectedId;
+            }
+        }
+
+        function refreshStops(origin, destination) {
+            const lineId = lineSelect.value;
+            fillStops(originSelect, lineId, origin);
+            fillStops(destinationSelect, lineId, destination);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const saved = (typeof loadPluginSettings !== 'undefined' && loadPluginSettings) ? pluginSettings : {};
+
+            const line = saved.metraLine || defaults.line;
+            if (line && [...lineSelect.options].some(option => option.value === line)) {
+                lineSelect.value = line;
+            }
+
+            refreshStops(saved.originStop || defaults.origin, saved.destinationStop || defaults.destination);
+
+            document.getElementById('walkMinutes').value = saved.walkMinutes ?? defaults.walkMinutes;
+            document.getElementById('departureCount').value = saved.departureCount || defaults.departureCount;
+
+            [['useRealtime', saved.useRealtime], ['showAlerts', saved.showAlerts]].forEach(([id, value]) => {
+                const enabled = value !== 'false';
+                document.getElementById(id).checked = enabled;
+                document.getElementById(`${id}Value`).value = enabled ? 'true' : 'false';
+            });
+
+            lineSelect.addEventListener('change', () => refreshStops(null, null));
+        });
+    })();
+</script>
