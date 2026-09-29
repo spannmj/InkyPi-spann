@@ -169,6 +169,9 @@ class Metra(BasePlugin):
             "leave_at": self._format_time(leave_at),
             "status": status,
             "status_kind": status_kind,
+            # A cancelled row is struck through in full, so the original time
+            # would only add noise there.
+            "show_scheduled": bool(delay) and not departure["cancelled"],
             "cancelled": departure["cancelled"],
             "realtime": departure["realtime"],
             "delay": delay,
@@ -177,22 +180,22 @@ class Metra(BasePlugin):
 
     @staticmethod
     def _build_hero(featured, walk_minutes):
-        """Describes the headline 'when do I need to leave' state."""
+        """Describes the headline 'when do I need to leave' state.
+
+        Shows a wall-clock time rather than a countdown so the board stays
+        accurate between refreshes.
+        """
         if featured["cancelled"]:
-            return {"kind": "cancelled", "value": "\u2014", "unit": "", "label": "Next train cancelled"}
+            return {"kind": "cancelled", "text": "\u2014", "label": "Next train cancelled"}
 
-        if featured["leave_in"] > 0:
-            return {
-                "kind": "leave_in",
-                "value": featured["leave_in"],
-                "unit": "min" if featured["leave_in"] == 1 else "mins",
-                "label": "Leave in",
-            }
+        if featured["leave_in"] < 0:
+            return {"kind": "leave_now", "text": "Now", "label": "Head out"}
 
-        if walk_minutes > 0:
-            return {"kind": "leave_now", "value": "Now", "unit": "", "label": "Head out"}
-
-        return {"kind": "leave_now", "value": "Now", "unit": "", "label": "Boarding"}
+        return {
+            "kind": "leave_at",
+            "time": featured["leave_at"],
+            "label": "Out the door" if walk_minutes else "Departs",
+        }
 
     def _load_line_options(self):
         """Builds the line/station dropdown data for the settings page."""

@@ -21,18 +21,21 @@
     <div class="hero-left">
       <div class="hero-label">{{ hero.label }}</div>
       <div class="hero-value">
-        {{ hero.value }}{% if hero.unit %}<span class="hero-unit">{{ hero.unit }}</span>{% endif %}
+        {%- if hero.time -%}
+        {{ hero.time.hm }}<span class="ap">{{ hero.time.ap }}</span>
+        {%- else -%}
+        {{ hero.text }}
+        {%- endif -%}
       </div>
     </div>
     <div class="hero-right">
       <div class="hero-times">
-        <span class="hero-depart">{{ featured.depart.hm }}<span class="ap">{{ featured.depart.ap }}</span></span>
+        <span class="hero-depart">{{ featured.depart.hm }}<span class="ap">{{ featured.depart.ap }}</span>{% if featured.show_scheduled %}<span class="was">{{ featured.scheduled_depart.hm }}{{ featured.scheduled_depart.ap }}</span>{% endif %}</span>
         <span class="hero-arrow">&rarr;</span>
         <span class="hero-arrive">{{ featured.arrive.hm }}<span class="ap">{{ featured.arrive.ap }}</span></span>
       </div>
       <div class="hero-detail">
         Train {{ featured.train }} &middot; {{ featured.duration }} min ride
-        {%- if walk_minutes %} &middot; out the door by {{ featured.leave_at.hm }}{{ featured.leave_at.ap }}{% endif %}
       </div>
     </div>
   </div>
@@ -47,7 +50,7 @@
     </div>
     {% for row in departures %}
     <div class="table-row{% if row.featured %} is-featured{% endif %}{% if row.cancelled %} is-cancelled{% endif %}">
-      <span class="col-depart">{{ row.depart.hm }}<span class="ap">{{ row.depart.ap }}</span></span>
+      <span class="col-depart">{{ row.depart.hm }}<span class="ap">{{ row.depart.ap }}</span>{% if row.show_scheduled %}<span class="was">{{ row.scheduled_depart.hm }}{{ row.scheduled_depart.ap }}</span>{% endif %}</span>
       <span class="col-arrive">{{ row.arrive.hm }}<span class="ap">{{ row.arrive.ap }}</span></span>
       <span class="col-train">{{ row.train }}</span>
       {% if not narrow %}<span class="col-leave">{% if row.leave_in >= 0 %}{{ row.leave_at.hm }}{{ row.leave_at.ap }}{% else %}&mdash;{% endif %}</span>{% endif %}

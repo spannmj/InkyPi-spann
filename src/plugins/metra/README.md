@@ -1,8 +1,8 @@
 # Metra
 
 A commuter departure board for any Metra trip: the next few trains between two
-stations, how long the ride takes, and a countdown telling you when to walk out
-the door.
+stations, how long the ride takes, and the time you need to be out the door to
+catch the next one.
 
 ![Metra departure board](../../../docs/images/metra.png)
 
@@ -27,13 +27,18 @@ are fast and cheap even on a Pi Zero.
 |---|---|
 | Line | Any of the 11 Metra lines |
 | From / To | Stations on that line. Only trips that serve the origin *before* the destination are shown, so direction is inferred automatically. |
-| Minutes to station | Your walk/drive time. Drives the "leave in" countdown and the *Leave by* column. |
+| Minutes to station | Your walk/drive time. Subtracted from the departure to produce the headline "out the door" time and the *Leave by* column. Set it to 0 and the headline becomes the departure time itself. |
 | Trains to show | 3–8 upcoming departures |
 | Use live delays | Applies realtime trip updates (needs `METRA_API_KEY`) |
 | Show service alerts | Displays active alerts for the line (needs `METRA_API_KEY`) |
 
-Status values: `Scheduled` (no realtime data yet), `On time`, `+N min`, and
-`Cancelled`. Cancelled trains are struck through and skipped by the countdown.
+Status values: `Scheduled` (no realtime data yet), `On time`, `+N min`, `-N min`,
+and `Cancelled`. When a train is delayed, the *Depart* column shows the predicted
+time with the original struck through beside it. Cancelled trains are struck
+through and skipped when picking the headline train.
+
+All times are wall-clock rather than relative, so the board does not go stale
+between refreshes.
 
 ## Optional: live delays
 

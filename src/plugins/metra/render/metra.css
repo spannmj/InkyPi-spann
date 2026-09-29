@@ -21,6 +21,17 @@
     margin-left: 0.06em;
 }
 
+/* The original scheduled time, kept alongside a delayed prediction. The
+   strikethrough carries the meaning, so this stays close to full opacity —
+   light greys dither badly on e-ink at small sizes. */
+.was {
+    font-size: 0.68em;
+    font-weight: normal;
+    text-decoration: line-through;
+    opacity: 0.7;
+    margin-left: 0.35em;
+}
+
 /* Header ---------------------------------------------------------------- */
 
 .board-header {
@@ -103,14 +114,6 @@
     letter-spacing: -0.02em;
 }
 
-.hero-unit {
-    font-size: 0.32em;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-left: 0.25em;
-}
-
 .hero-right {
     flex: 1;
     min-width: 0;
@@ -133,7 +136,6 @@
     padding-top: 0.25em;
 }
 
-.hero-cancelled .hero-value,
 .hero-cancelled .hero-times {
     text-decoration: line-through;
 }
